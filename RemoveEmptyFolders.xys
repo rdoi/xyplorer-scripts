@@ -1,0 +1,27 @@
+::/** XYplorer: Remove Empty Folders
+
+Remove recursively all empty folder from the current folder.
+At the end, it shows the execution log.
+
+@author rdoi
+@created feb/2014
+*/
+		$log="RemoveEmptyFolders.xys: RDoi Empty folders remover<crlf>-------------------------------<crlf>";
+		$folder=get("Path");
+		$log=$log."Processing '".$folder."' folders...<crlf>";
+		$flist=formatlist(folderreport("dirs","r",$folder,"r",,"|"),"r","|")."|".$folder;
+		$count=0;
+		foreach($f, $flist,"|") {
+			$content=listfolder($f,,0,"|");
+			if ($content=="") {
+			  delete 0,0,$f;
+				$log=$log."Removed: ".$f."<crlf>";
+				$count=$count+1;
+			}
+		}
+		$log=$log.">>> ".$count." folders removed.";
+		beep;
+		text $log;
+
+
+
