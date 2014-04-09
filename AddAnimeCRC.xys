@@ -1,0 +1,31 @@
+::/** XYplorer: Add Anime CRC
+
+Adds a CRC32 checksum in the selected file's name.
+Its based on anime fansubbers release filename format. Something like "somefile.anything.[0123abcd].mkv"
+
+If a CRC pattern is already found in the filename, it will be compared against the calculated one and reported as invalid or valid.
+At the end, it shows the execution log.
+
+@author rdoi
+@created apr/2014
+*/
+  $log="ChecksumsInFolders.xys: RDoi Anime CRC32 adder<crlf>-------------------------------<crlf>";
+  foreach($item, "<get SelectedItemsPathNames>", "<crlf>") {
+    if (exists($item) == 1) {
+      $fname= regexreplace($item,"^.*\\", "");
+      $crc= hash("crc32",$item,3);
+    	if ( regexmatches($fname,"\[[0-9a-f]{8}\]") == "" ) {
+        $r= renameitem(regexreplace($fname,"\..*$","").".[". recase($crc) ."]",$item,1,"-01");
+        if (strlen($r) > 0) {
+          $log= $log."+CRC.ADDED $r<crlf>";
+        }
+    	} else {
+        if ( regexmatches($fname,"\[$crc\]") == "" ) {
+          $log= $log."-CRC.ERROR $crc: ".$item."<crlf>";
+        } else {
+          $log= $log."=CRC.VALID $crc: ".$item."<crlf>";
+        }
+    	}
+    }
+  }
+  text $log;
